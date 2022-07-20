@@ -86,6 +86,45 @@
 /************************************************************************/
 /******/ ({
 
+/***/ "./src/img/IdleRight.png":
+/*!*******************************!*\
+  !*** ./src/img/IdleRight.png ***!
+  \*******************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "44ba5b9cca64e75c78638734bbb13459.png");
+
+/***/ }),
+
+/***/ "./src/img/Run2.png":
+/*!**************************!*\
+  !*** ./src/img/Run2.png ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "1d04895e3995b148cad389c82ad058ef.png");
+
+/***/ }),
+
+/***/ "./src/img/RunBack.png":
+/*!*****************************!*\
+  !*** ./src/img/RunBack.png ***!
+  \*****************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = (__webpack_require__.p + "61ca5aec459a6d0ea0aae29419551665.png");
+
+/***/ }),
+
 /***/ "./src/img/flowers.png":
 /*!*****************************!*\
   !*** ./src/img/flowers.png ***!
@@ -165,6 +204,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _img_mountain1_png__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../img/mountain1.png */ "./src/img/mountain1.png");
 /* harmony import */ var _img_trees_png__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../img/trees.png */ "./src/img/trees.png");
 /* harmony import */ var _img_grass_png__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../img/grass.png */ "./src/img/grass.png");
+/* harmony import */ var _img_IdleRight_png__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../img/IdleRight.png */ "./src/img/IdleRight.png");
+/* harmony import */ var _img_Run2_png__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../img/Run2.png */ "./src/img/Run2.png");
+/* harmony import */ var _img_RunBack_png__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../img/RunBack.png */ "./src/img/RunBack.png");
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -176,12 +218,17 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
 
 
+
+
+
 console.log(_img_plattform3_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
 var canvas = document.querySelector('canvas');
 var ctx = canvas.getContext('2d');
 canvas.width = 1024;
 canvas.height = 576;
+var playerOffsetY = 20;
 var gravity = 0.5;
+var isJumping = false;
 
 var Player = /*#__PURE__*/function () {
   function Player() {
@@ -196,23 +243,43 @@ var Player = /*#__PURE__*/function () {
       x: 0,
       y: 0
     };
-    this.velocity = {
-      x: 0,
-      y: 0
+    this.width = 250;
+    this.height = 250;
+    this.image = createImage(_img_IdleRight_png__WEBPACK_IMPORTED_MODULE_5__["default"]);
+    this.frames = 0;
+    this.sprites = {
+      stand: {
+        right: createImage(_img_IdleRight_png__WEBPACK_IMPORTED_MODULE_5__["default"]),
+        cropwidth: 350
+      },
+      run: {
+        left: createImage(_img_RunBack_png__WEBPACK_IMPORTED_MODULE_7__["default"]),
+        right: createImage(_img_Run2_png__WEBPACK_IMPORTED_MODULE_6__["default"]),
+        cropwidth: 250
+      }
     };
-    this.width = 100;
-    this.height = 100;
+    this.currentSprite = this.sprites.stand.right;
+    this.currentCropWidth = 177;
   }
 
   _createClass(Player, [{
     key: "draw",
     value: function draw() {
-      ctx.fillStyle = 'red';
-      ctx.fillRect(this.position.x, this.position.y, this.width, this.height);
+      ctx.drawImage(this.currentSprite, 510 * this.frames, 0, 350, 261, this.position.x, this.position.y, this.width, this.height);
     }
   }, {
     key: "update",
     value: function update() {
+      this.frames++;
+
+      if (this.frames > 15 && this.currentSprite === this.sprites.stand.right) {
+        this.frames = 0;
+      } else if (this.frames > 12 && this.currentSprite === this.sprites.run.right) {
+        this.frames = 0;
+      } else if (this.frames > 12 && this.currentSprite === this.sprites.run.left) {
+        this.frames = 0;
+      }
+
       this.draw();
       this.position.y += this.velocity.y;
       this.position.x += this.velocity.x;
@@ -354,7 +421,7 @@ function animate() {
 
   if (keys.right.pressed && player.position.x < 400) {
     player.velocity.x = player.speed;
-  } else if (keys.left.pressed && player.position.x > 100) {
+  } else if (keys.left.pressed && player.position.x > 100 || keys.left.pressed && scrollOffset === 0 && player.position.x > 0) {
     player.velocity.x = -player.speed;
   } else {
     player.velocity.x = 0;
@@ -367,7 +434,7 @@ function animate() {
       scenery.forEach(function (scenery) {
         scenery.position.x -= player.speed * 0.66;
       });
-    } else if (keys.left.pressed) {
+    } else if (keys.left.pressed && scrollOffset > 0) {
       scrollOffset -= 5;
       plattforms.forEach(function (plattform) {
         plattform.position.x += player.speed;
@@ -379,8 +446,9 @@ function animate() {
   }
 
   plattforms.forEach(function (plattform) {
-    if (player.position.y + player.height <= plattform.position.y && player.position.y + player.height + player.velocity.y >= plattform.position.y && player.position.x + player.width >= plattform.position.x && player.position.x <= plattform.position.x + plattform.width) {
+    if (player.position.y + player.height <= plattform.position.y + playerOffsetY && player.position.y + player.height + player.velocity.y >= plattform.position.y + playerOffsetY && player.position.x + player.width >= plattform.position.x && player.position.x <= plattform.position.x + plattform.width) {
       player.velocity.y = 0;
+      isJumping = false;
     }
   });
 
@@ -402,6 +470,7 @@ addEventListener('keydown', function (_ref3) {
     case 65:
       console.log('left');
       keys.left.pressed = true;
+      player.currentSprite = player.sprites.run.left;
       break;
 
     case 83:
@@ -411,12 +480,19 @@ addEventListener('keydown', function (_ref3) {
     case 68:
       console.log('right');
       keys.right.pressed = true;
+      player.currentSprite = player.sprites.run.right;
       break;
 
     case 87:
-      console.log('up');
-      player.velocity.y -= 15;
-      break;
+      if (!isJumping) {
+        console.log('up');
+        player.velocity.y -= 15;
+        isJumping = true;
+        break;
+      } else {
+        break;
+      }
+
   }
 });
 addEventListener('keyup', function (_ref4) {
@@ -425,6 +501,7 @@ addEventListener('keyup', function (_ref4) {
   switch (keyCode) {
     case 65:
       keys.left.pressed = false;
+      player.currentSprite = player.sprites.stand.right;
       console.log('left');
       break;
 
@@ -435,6 +512,7 @@ addEventListener('keyup', function (_ref4) {
     case 68:
       console.log('right');
       keys.right.pressed = false;
+      player.currentSprite = player.sprites.stand.right;
       break;
 
     case 87:

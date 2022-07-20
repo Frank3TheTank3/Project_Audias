@@ -4,14 +4,19 @@ import flowers from '../img/flowers.png'
 import mountains from '../img/mountain1.png'
 import trees from '../img/trees.png'
 import grass from '../img/grass.png'
+import standright from '../img/IdleRight.png'
+import runright from '../img/Run2.png'
+import runleft from '../img/RunBack.png'
 
 console.log(plattform)
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 canvas.width = 1024;
 canvas.height = 576;
-
+const playerOffsetY = 20;
 const gravity = 0.5
+let isJumping = false;
+
 class Player {
 
   constructor() {
@@ -25,24 +30,46 @@ class Player {
       x: 0,
       y: 0
     }
-    this.velocity = {
-      x: 0,
-      y: 0
+    this.width = 250
+    this.height = 250
+    this.image = createImage(standright)
+    this.frames = 0
+    this.sprites = {
+      stand:{
+        right: createImage(standright),
+        cropwidth: 350
+      },
+      run:{
+        left: createImage(runleft),
+        right: createImage(runright),
+        cropwidth: 250
+      }
     }
-    this.width = 100
-    this.height = 100
+    this.currentSprite = this.sprites.stand.right
+    this.currentCropWidth = 177
   }
 
   draw() {
-    ctx.fillStyle = 'red';
-    ctx.fillRect(
-      this.position.x,
-      this.position.y,
-      this.width,
+    ctx.drawImage(
+      this.currentSprite,
+      510 * this.frames,
+      0,
+      350,
+      261,
+      this.position.x, 
+      this.position.y, 
+      this.width, 
       this.height)
   }
 
   update() {
+    this.frames++
+    if(this.frames > 15 && this.currentSprite === this.sprites.stand.right)
+    {this.frames = 0}
+    else if(this.frames > 12 && this.currentSprite === (this.sprites.run.right))
+    {this.frames = 0}
+    else if(this.frames > 12 && this.currentSprite === (this.sprites.run.left))
+    {this.frames = 0}
     this.draw()
     this.position.y += this.velocity.y
     this.position.x += this.velocity.x
@@ -127,6 +154,8 @@ function init() {
 
    player = new Player()
 
+   
+
    plattforms = [
     new Plattform({ x: 0, y: 500, image: plattformImage }),
     new Plattform({ x: 600, y: 300, image: plattformImage }),
@@ -172,7 +201,8 @@ function animate() {
   if (keys.right.pressed && player.position.x < 400) {
     player.velocity.x = player.speed
   }
-  else if (keys.left.pressed && player.position.x > 100) {
+  else if ((keys.left.pressed && player.position.x > 100) 
+  || (keys.left.pressed && scrollOffset === 0 && player.position.x > 0)) {
     player.velocity.x = -player.speed
   }
   else {
@@ -188,7 +218,7 @@ function animate() {
       })
 
     }
-    else if (keys.left.pressed) {
+    else if (keys.left.pressed && scrollOffset > 0) {
       scrollOffset -= 5
       plattforms.forEach(plattform => {
         plattform.position.x += player.speed
@@ -203,11 +233,12 @@ function animate() {
 
   plattforms.forEach(plattform => {
 
-    if (player.position.y + player.height <= plattform.position.y
-      && player.position.y + player.height + player.velocity.y >= plattform.position.y
+    if (player.position.y + player.height <= (plattform.position.y+playerOffsetY)
+      && player.position.y + player.height + player.velocity.y >= (plattform.position.y +playerOffsetY)
       && player.position.x + player.width >= plattform.position.x
       && player.position.x <= plattform.position.x + plattform.width) {
       player.velocity.y = 0
+      isJumping = false
     }
   })
 
@@ -230,6 +261,7 @@ addEventListener('keydown', ({ keyCode }) => {
     case 65:
       console.log('left')
       keys.left.pressed = true
+      player.currentSprite = player.sprites.run.left
       break
 
     case 83:
@@ -239,12 +271,20 @@ addEventListener('keydown', ({ keyCode }) => {
     case 68:
       console.log('right')
       keys.right.pressed = true
+      player.currentSprite = player.sprites.run.right
       break
 
     case 87:
+      if(!isJumping)
+      {
       console.log('up')
       player.velocity.y -= 15
+      isJumping = true
       break
+      }
+      else{
+        break
+      }
       
   }
 
@@ -255,6 +295,7 @@ addEventListener('keyup', ({ keyCode }) => {
   switch (keyCode) {
     case 65:
       keys.left.pressed = false
+      player.currentSprite = player.sprites.stand.right
       console.log('left')
       break
 
@@ -265,6 +306,7 @@ addEventListener('keyup', ({ keyCode }) => {
     case 68:
       console.log('right')
       keys.right.pressed = false
+      player.currentSprite = player.sprites.stand.right
       break
 
     case 87:
