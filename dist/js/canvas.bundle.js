@@ -187,6 +187,7 @@ var Player = /*#__PURE__*/function () {
   function Player() {
     _classCallCheck(this, Player);
 
+    this.speed = 10;
     this.position = {
       x: 30,
       y: 30
@@ -283,20 +284,6 @@ var Scenery = /*#__PURE__*/function () {
   return Scenery;
 }();
 
-var scenery = [new Scenery({
-  x: 0,
-  y: 0,
-  image: createImage(_img_mountain1_png__WEBPACK_IMPORTED_MODULE_2__["default"])
-}), new Scenery({
-  x: 0,
-  y: 250,
-  image: createImage(_img_trees_png__WEBPACK_IMPORTED_MODULE_3__["default"])
-}), new Scenery({
-  x: 0,
-  y: 350,
-  image: createImage(_img_grass_png__WEBPACK_IMPORTED_MODULE_4__["default"])
-})];
-
 function createImage(imgSrc) {
   var image = new Image();
   image.src = imgSrc;
@@ -304,16 +291,9 @@ function createImage(imgSrc) {
 }
 
 var plattformImage = createImage(_img_plattform3_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
-var plattforms = [new Plattform({
-  x: 0,
-  y: 500,
-  image: plattformImage
-}), new Plattform({
-  x: 600,
-  y: 300,
-  image: plattformImage
-})];
 var player = new Player();
+var plattforms = [];
+var scenery = [];
 var keys = {
   right: {
     pressed: false
@@ -323,6 +303,42 @@ var keys = {
   }
 };
 var scrollOffset = 0;
+
+function init() {
+  plattformImage = createImage(_img_plattform3_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
+  player = new Player();
+  plattforms = [new Plattform({
+    x: 0,
+    y: 500,
+    image: plattformImage
+  }), new Plattform({
+    x: 600,
+    y: 300,
+    image: plattformImage
+  }), new Plattform({
+    x: 1200,
+    y: 250,
+    image: plattformImage
+  }), new Plattform({
+    x: 2000,
+    y: 500,
+    image: plattformImage
+  })];
+  scenery = [new Scenery({
+    x: 0,
+    y: 0,
+    image: createImage(_img_mountain1_png__WEBPACK_IMPORTED_MODULE_2__["default"])
+  }), new Scenery({
+    x: 0,
+    y: 250,
+    image: createImage(_img_trees_png__WEBPACK_IMPORTED_MODULE_3__["default"])
+  }), new Scenery({
+    x: 0,
+    y: 350,
+    image: createImage(_img_grass_png__WEBPACK_IMPORTED_MODULE_4__["default"])
+  })];
+  scrollOffset = 0;
+}
 
 function animate() {
   requestAnimationFrame(animate);
@@ -337,27 +353,27 @@ function animate() {
   player.update();
 
   if (keys.right.pressed && player.position.x < 400) {
-    player.velocity.x = 5;
+    player.velocity.x = player.speed;
   } else if (keys.left.pressed && player.position.x > 100) {
-    player.velocity.x = -5;
+    player.velocity.x = -player.speed;
   } else {
     player.velocity.x = 0;
 
     if (keys.right.pressed) {
-      scrollOffset += 5;
+      scrollOffset += player.speed;
       plattforms.forEach(function (plattform) {
-        plattform.position.x -= 5;
+        plattform.position.x -= player.speed;
       });
       scenery.forEach(function (scenery) {
-        scenery.position.x -= 3;
+        scenery.position.x -= player.speed * 0.66;
       });
     } else if (keys.left.pressed) {
       scrollOffset -= 5;
       plattforms.forEach(function (plattform) {
-        plattform.position.x += 5;
+        plattform.position.x += player.speed;
       });
       scenery.forEach(function (scenery) {
-        scenery.position.x += 3;
+        scenery.position.x += player.speed * 0.66;
       });
     }
   }
@@ -369,10 +385,12 @@ function animate() {
   });
 
   if (scrollOffset > 2000) {
+    init();
     alert("Congratulations, you win!");
   }
 
   if (player.position.y > canvas.height) {
+    init();
     alert("You lose!");
   }
 }
@@ -397,6 +415,7 @@ addEventListener('keydown', function (_ref3) {
 
     case 87:
       console.log('up');
+      player.velocity.y -= 15;
       break;
   }
 });
@@ -420,10 +439,10 @@ addEventListener('keyup', function (_ref4) {
 
     case 87:
       console.log('up');
-      player.velocity.y -= 20;
       break;
   }
 });
+init();
 animate();
 
 /***/ })
