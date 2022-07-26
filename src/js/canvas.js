@@ -36,10 +36,7 @@ export function StartGame() {
   let plattformImage = createImage(plattform)
   let bossImage = createImage(boss)
   let alienImage = createImage(alien)
-  let player = new Player()
-  let plattforms = []
-  let enemies = []
-  let scenery = []
+ 
   let scrollOffset = 0
 
   const keys = {
@@ -210,6 +207,11 @@ export function StartGame() {
   /*                     CORE FUNCTIONS                           |
   /*=============================================================*/
 
+  let player = new Player()
+  let plattforms = []
+  let enemies = []
+  let scenery = []
+  
   function createImage(imgSrc) {
     const image = new Image()
     image.src = imgSrc

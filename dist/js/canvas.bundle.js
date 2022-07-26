@@ -290,10 +290,6 @@ function StartGame() {
   var plattformImage = createImage(_img_plattform3_png__WEBPACK_IMPORTED_MODULE_0__["default"]);
   var bossImage = createImage(_img_boss_png__WEBPACK_IMPORTED_MODULE_3__["default"]);
   var alienImage = createImage(_img_alien_png__WEBPACK_IMPORTED_MODULE_4__["default"]);
-  var player = new Player();
-  var plattforms = [];
-  var enemies = [];
-  var scenery = [];
   var scrollOffset = 0;
   var keys = {
     right: {
@@ -493,6 +489,11 @@ function StartGame() {
   /*                     CORE FUNCTIONS                           |
   /*=============================================================*/
 
+
+  var player = new Player();
+  var plattforms = [];
+  var enemies = [];
+  var scenery = [];
 
   function createImage(imgSrc) {
     var image = new Image();
