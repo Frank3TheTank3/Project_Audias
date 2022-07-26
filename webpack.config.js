@@ -6,7 +6,8 @@ module.exports = {
   entry: './src/js/canvas.js',
   output: {
     path: __dirname + '/dist/',
-    filename: './js/canvas.bundle.js'
+    filename: './js/canvas.bundle.js',
+    library: 'lib'
   },
   module: {
     rules: [
